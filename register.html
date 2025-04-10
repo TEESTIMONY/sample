@@ -3,51 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hop Bunny - Register</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Hop Bunny - User Registration</title>
 </head>
 <body>
-    <div class="container">
-        <div class="form-card">
-            <h1>Create an Account</h1>
-            <div class="logo">
-                <img src="assets/bunny-icon.png" alt="Hop Bunny Logo" onerror="this.src='https://placehold.co/200x200?text=Hop+Bunny'">
-            </div>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                    <small>Password must be at least 6 characters long</small>
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required>
-                </div>
-                <div id="error-message" class="error-message"></div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Register</button>
-                </div>
-            </form>
-            <div class="info">
-                <p>Already have an account? <a href="login.html">Login here</a></p>
-                <p><a href="index.html">Back to Home</a></p>
-            </div>
+    <h1>Hop Bunny - Registration Form</h1>
+    
+    <div id="message"></div>
+    
+    <form id="registerForm">
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
         </div>
-    </div>
-    <footer>
-        <p>&copy; 2023 Hop Bunny Game - All Rights Reserved</p>
-    </footer>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div>
+            <button type="submit">Register</button>
+        </div>
+    </form>
 
-    <!-- Load config.js first to define API_URL -->
-    <script src="js/config.js"></script>
-    <script src="js/register.js"></script>
+    <div>
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const messageDiv = document.getElementById('message');
+            
+            try {
+                const response = await fetch('https://hop-bunny-backend-v2.vercel.app/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        email,
+                        password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.innerHTML = `<p style="color: green">${data.message}</p>`;
+                    // Clear the form
+                    document.getElementById('registerForm').reset();
+                } else {
+                    messageDiv.innerHTML = `<p style="color: red">${data.message || 'Registration failed'}</p>`;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `<p style="color: red">Error: ${error.message}</p>`;
+                console.error('Registration error:', error);
+            }
+        });
+    </script>
 </body>
 </html> 
